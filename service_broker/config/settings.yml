@@ -1,0 +1,32 @@
+catalog:
+  services: # catalog must advertise at least one service
+    - id: 525c5b5c-4e1d-4dbb-bea0-443d44a43b92
+      name: ethereum-service
+      description: Provides read and write access to an Ethereum cluster
+      bindable: true
+      tags:
+        - ethereum
+      metadata:
+        displayName: Ethereum Service
+        imageUrl: https://d1nwne6cc3e7hn.cloudfront.net/pivotal.png
+        longDescription: The service binds to the RPC endpoint for an Ethereum cluster.
+        providerDisplayName: Ethereum
+        documentationUrl: https://github.com/micahyoung/ethereum-service-broker
+        supportUrl: https://github.com/micahyoung/ethereum-service-broker
+      plans: # a service has one or more plans
+        - id: 35c0c327-5715-46cd-b7eb-073c4ba2fe4a
+          name: public
+          description: Ethereum
+          metadata:
+            bullets:
+              - Ethereum
+            costs:
+              - amount:
+                  usd: 0.0
+                unit: MONTHLY
+            displayName: Public
+
+# credentials for Cloud Controller to authenticate with the broker
+basic_auth:
+  username: admin
+  password: password
