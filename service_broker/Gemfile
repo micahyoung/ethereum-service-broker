@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-ruby '2.0.0'
+ruby '2.3.5'
 
 gem 'json'
 gem 'rake'
@@ -10,4 +10,5 @@ group :test do
   gem 'pry'
   gem 'rack-test'
   gem 'webmock'
+  gem 'minitest'
 end

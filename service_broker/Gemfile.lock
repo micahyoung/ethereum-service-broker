@@ -8,6 +8,7 @@ GEM
     json (1.8.6)
     metaclass (0.0.1)
     method_source (0.8.2)
+    minitest (5.10.3)
     mocha (0.14.0)
       metaclass (~> 0.0.1)
     pry (0.9.12.4)
@@ -36,6 +37,7 @@ PLATFORMS
 
 DEPENDENCIES
   json
+  minitest
   mocha
   pry
   rack-test
@@ -44,7 +46,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 2.0.0p648
+   ruby 2.3.5p376
 
 BUNDLED WITH
    1.15.4

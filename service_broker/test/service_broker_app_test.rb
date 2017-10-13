@@ -6,89 +6,98 @@ def app
   ServiceBrokerApp.new
 end
 
-describe "get /v2/catalog" do
-  def make_request
-    get "/v2/catalog"
+describe "ServiceBrokerApp" do
+  before do
+    ethereum_service_helper = mock
+    EthereumServiceHelper.stubs(:new).returns(ethereum_service_helper)
+    ethereum_service_helper.stubs(:bootnode).returns({ip: "1.2.3.4"})
+    ethereum_service_helper.stubs(:nodes).returns([{ip: "1.2.3.4"}])
   end
 
-  describe "when basic auth credentials are missing" do
-    before do
-      make_request
+  describe "get /v2/catalog" do
+    def make_request
+      get "/v2/catalog"
     end
 
-    it "returns a 401 unauthorized response" do
-      assert_equal 401, last_response.status
-    end
-  end
+    describe "when basic auth credentials are missing" do
+      before do
+        make_request
+      end
 
-  describe "when basic auth credentials are incorrect" do
-    before do
-      authorize "admin", "wrong-password"
-      make_request
-    end
-
-    it "returns a 401 unauthorized response" do
-      assert_equal 401, last_response.status
-    end
-  end
-
-  describe "when basic auth credentials are correct" do
-    before do
-      authorize "admin", "password"
-      make_request
-    end
-
-    it "returns a 200 OK response" do
-      assert_equal 200, last_response.status
-    end
-
-    it "specifies the content type of the response" do
-      last_response.header["Content-Type"].must_include("application/json")
-    end
-
-    it "returns correct keys in JSON" do
-      response_json = JSON.parse last_response.body
-
-      response_json.keys.must_equal ["services"]
-
-      services = response_json["services"]
-      assert services.length > 0
-
-      services.each do |service|
-        assert_operator service.keys.length, :>=, 5
-        assert service.keys.include? "id"
-        assert service.keys.include? "name"
-        assert service.keys.include? "description"
-        assert service.keys.include? "bindable"
-        assert service.keys.include? "plans"
-
-        plans = service["plans"]
-        assert plans.length > 0
-        plans.each do |plan|
-          assert_operator plan.keys.length, :>=, 3
-          assert plan.keys.include? "id"
-          assert plan.keys.include? "name"
-          assert plan.keys.include? "description"
-        end
+      it "returns a 401 unauthorized response" do
+        assert_equal 401, last_response.status
       end
     end
 
-    it "contains proper metadata when it is (optionally) provided in settings.yml" do
-      response_json = JSON.parse last_response.body
+    describe "when basic auth credentials are incorrect" do
+      before do
+        authorize "admin", "wrong-password"
+        make_request
+      end
 
-      services = response_json["services"]
+      it "returns a 401 unauthorized response" do
+        assert_equal 401, last_response.status
+      end
+    end
 
-      services.each do |service|
-        assert service.keys.include? "metadata"
+    describe "when basic auth credentials are correct" do
+      before do
+        authorize "admin", "password"
+        make_request
+      end
 
-        plans = service["plans"]
-        plans.each do |plan|
-          assert plan.keys.include? "metadata"
-          plan_costs = plan["metadata"]["costs"]
-          plan_costs.each do |cost|
-            assert cost.keys.include? "amount"
-            assert cost.keys.include? "unit"
-            assert cost["amount"].keys.include? "usd"
+      it "returns a 200 OK response" do
+        assert_equal 200, last_response.status
+      end
+
+      it "specifies the content type of the response" do
+        last_response.header["Content-Type"].must_include("application/json")
+      end
+
+      it "returns correct keys in JSON" do
+        response_json = JSON.parse last_response.body
+
+        response_json.keys.must_equal ["services"]
+
+        services = response_json["services"]
+        assert services.length > 0
+
+        services.each do |service|
+          assert_operator service.keys.length, :>=, 5
+          assert service.keys.include? "id"
+          assert service.keys.include? "name"
+          assert service.keys.include? "description"
+          assert service.keys.include? "bindable"
+          assert service.keys.include? "plans"
+
+          plans = service["plans"]
+          assert plans.length > 0
+          plans.each do |plan|
+            assert_operator plan.keys.length, :>=, 3
+            assert plan.keys.include? "id"
+            assert plan.keys.include? "name"
+            assert plan.keys.include? "description"
+          end
+        end
+      end
+
+      it "contains proper metadata when it is (optionally) provided in settings.yml" do
+        response_json = JSON.parse last_response.body
+
+        services = response_json["services"]
+
+        services.each do |service|
+          assert service.keys.include? "metadata"
+
+          plans = service["plans"]
+          plans.each do |plan|
+            assert plan.keys.include? "metadata"
+            plan_costs = plan["metadata"]["costs"]
+            plan_costs.each do |cost|
+              assert cost.keys.include? "amount"
+              assert cost.keys.include? "unit"
+              assert cost["amount"].keys.include? "usd"
+            end
           end
         end
       end
@@ -209,7 +218,9 @@ describe "get /v2/catalog" do
         it "responds with credentials, including the private key and repo url" do
           last_response.body.must_equal({
                                             credentials: {
-                                                uri: ""
+                                                bootnode: {ip: "1.2.3.4"},
+                                                nodes: [{ip: "1.2.3.4"}],
+
                                             }
                                         }.to_json)
         end
@@ -249,6 +260,7 @@ describe "get /v2/catalog" do
     end
 
     describe "when basic auth credentials are correct" do
+
       before do
         authorize "admin", "password"
       end
@@ -269,7 +281,7 @@ describe "get /v2/catalog" do
 
         it "returns an empty JSON body" do
           make_request
-          last_response.body.must_equal("{}")
+          last_response.body.must_equal({}.to_json)
         end
       end
     end
@@ -308,7 +320,6 @@ describe "get /v2/catalog" do
     describe "when basic auth credentials are correct" do
       before do
         authorize "admin", "password"
-
       end
 
       describe "when repo is successfully deleted" do
