@@ -96,7 +96,7 @@ class ServiceBrokerApp < Sinatra::Base
     # do nothing
   end
 
-  post '/bootnode_logs' do
+  post '/log-collector' do
     status 201
 
     request.body.rewind
@@ -104,14 +104,14 @@ class ServiceBrokerApp < Sinatra::Base
     ethereum_metadata_service.nodes.to_json
   end
 
-  get '/bootnode_logs/bootnode' do
+  get '/log-collector/bootnodes' do
     content_type :json
 
     status 200
     ethereum_metadata_service.bootnode.to_json
   end
 
-  get '/bootnode_logs/nodes' do
+  get '/log-collector/nodes' do
     content_type :json
 
     status 200

@@ -7,7 +7,7 @@ class EthereumServiceHelper
 
   def parse_log(message)
     case message
-      when /Listening, enode:/
+      when /enode:/
         ip_port = message[/(?<=@)[\d.:]+/]
         ip, port = ip_port.split(":")
         @bootnode = {ip: ip, bootnode_port: port}

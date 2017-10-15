@@ -3,6 +3,12 @@ require File.expand_path '../test_helper.rb', __FILE__
 describe "parse_logs" do
   it "parses init message" do
     ethereum_service_helper = EthereumServiceHelper.new
+    ethereum_service_helper.parse_log("2017-10-15T17:37:45.90-0400 [APP/PROC/WEB/0] ERR INFO [10-15|21:37:45] UDP listener up                          self=enode://8ba26367c9651a53880326ea2065da08c6f7ee744afcf3c0ab7dfe3457542fd2d467f57cff69729602427593beb6e1cadd01b0d122caf22120cb1e204ffbec72@10.242.186.135:33445\n")
+    assert_equal({ip: "10.242.186.135", bootnode_port: "33445"}, ethereum_service_helper.bootnode)
+  end
+
+  it "parses older init message" do
+    ethereum_service_helper = EthereumServiceHelper.new
     ethereum_service_helper.parse_log("<11>1 2017-10-13T03:55:39.58559+00:00 quorum.development.bootnode 5bfde9f4-59c5-443b-bacc-5cf08f93142a [APP/PROC/WEB/0] - - I1013 03:55:39.583558 p2p/discover/udp.go:217] Listening, enode://61077a284f5ba7607ab04f33cfde2750d659ad9af962516e159cf6ce708646066cd927a900944ce393b98b95c914e4d6c54b099f568342647a1cd4a262cc0423@10.252.26.21:33445\n")
     assert_equal({ip: "10.252.26.21", bootnode_port: "33445"}, ethereum_service_helper.bootnode)
   end
