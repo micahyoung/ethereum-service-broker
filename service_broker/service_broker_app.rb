@@ -2,7 +2,6 @@ require 'sinatra'
 require 'json'
 require 'yaml'
 require 'logger'
-require 'sinatra/authorization'
 
 require_relative './ethereum_service_helper'
 
