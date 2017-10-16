@@ -6,8 +6,6 @@ require 'logger'
 require_relative './ethereum_service_helper'
 
 class ServiceBrokerApp < Sinatra::Base
-  attr_reader :ethereum_metadata_service
-
   helpers do
     def protected!
       return if authorized?
@@ -61,10 +59,11 @@ class ServiceBrokerApp < Sinatra::Base
 
     if ethereum_metadata_service.bootnode
       {
-          credentials: {
-              bootnode: ethereum_metadata_service.bootnode,
-              nodes: ethereum_metadata_service.nodes,
-          }
+        credentials: {
+          bootnode: ethereum_metadata_service.bootnode,
+          nodes: ethereum_metadata_service.nodes,
+          env: ethereum_metadata_service.env,
+        }
       }.to_json
     else
       {}.to_json
@@ -108,7 +107,9 @@ class ServiceBrokerApp < Sinatra::Base
     content_type :json
 
     status 200
-    ethereum_metadata_service.bootnode.to_json
+    {
+      env: ethereum_metadata_service.env
+    }.merge(ethereum_metadata_service.bootnode).to_json
   end
 
   get '/log-collector/nodes' do

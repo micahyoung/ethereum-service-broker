@@ -12,6 +12,7 @@ describe "ServiceBrokerApp" do
     EthereumServiceHelper.stubs(:new).returns(ethereum_service_helper)
     ethereum_service_helper.stubs(:bootnode).returns({ip: "1.2.3.4"})
     ethereum_service_helper.stubs(:nodes).returns([{ip: "1.2.3.4"}])
+    ethereum_service_helper.stubs(:env).returns("FOO=bar")
   end
 
   describe "get /v2/catalog" do
@@ -217,11 +218,11 @@ describe "ServiceBrokerApp" do
 
         it "responds with credentials, including the private key and repo url" do
           last_response.body.must_equal({
-                                            credentials: {
-                                                bootnode: {ip: "1.2.3.4"},
-                                                nodes: [{ip: "1.2.3.4"}],
-
-                                            }
+                                          credentials: {
+                                            bootnode: {ip: "1.2.3.4"},
+                                            nodes: [{ip: "1.2.3.4"}],
+                                            env: "FOO=bar"
+                                          }
                                         }.to_json)
         end
       end
