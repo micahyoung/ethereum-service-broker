@@ -21,6 +21,8 @@ GEM
     rack-test (0.6.2)
       rack (>= 1.0)
     rake (10.1.1)
+    ruby-debug-ide (0.6.0)
+      rake (>= 0.8.1)
     safe_yaml (0.9.7)
     sinatra (1.4.4)
       rack (~> 1.4)
@@ -42,6 +44,7 @@ DEPENDENCIES
   pry
   rack-test
   rake
+  ruby-debug-ide
   sinatra
   webmock
 
