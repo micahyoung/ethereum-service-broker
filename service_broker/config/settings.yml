@@ -4,6 +4,7 @@ catalog:
       name: ethereum-service
       description: Provides read and write access to an Ethereum cluster
       bindable: true
+      requires: [syslog_drain]
       tags:
         - ethereum
       metadata:

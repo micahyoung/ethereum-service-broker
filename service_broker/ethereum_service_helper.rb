@@ -6,10 +6,12 @@ class EthereumServiceHelper
 
   def parse_log(message)
     case message
+      when /BOOTNODE=/
+        pubkey_ip_port = message[/(?<=BOOTNODE=)[\w\d.:@]+/]
+        @bootnode = pubkey_ip_port
       when /enode:/
         pubkey_ip_port = message[/(?<=enode:\/\/)[\w\d.:@]+/]
-        pubkey, ip, port = pubkey_ip_port.split(/:|@/)
-        @bootnode = {ip: ip, bootnode_port: port, bootnode_pubkey: pubkey}
+        @bootnode = pubkey_ip_port
       when /\<\<\</
         ip_port = message[/(?<=\<\<\< )[\d.:]+/]
         add_node(ip_port)
@@ -20,15 +22,6 @@ class EthereumServiceHelper
         ip_port = message[/(?<=addr=)[\d.:]+/]
         add_node(ip_port)
     end
-  end
-
-  def env
-    <<-EOS
-export NETWORK_ID=12345
-export BOOTNODE_IP=#{@bootnode[:ip]}
-export BOOTNODE_PORT=#{@bootnode[:bootnode_port]}
-export BOOTNODE_PUBKEY=#{@bootnode[:bootnode_pubkey]}
-    EOS
   end
 
   private

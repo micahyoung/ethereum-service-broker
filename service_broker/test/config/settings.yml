@@ -4,6 +4,8 @@ catalog:
       name: github-repo
       description: Provides read and write access to a GitHub repository.
       bindable: true
+      requires:
+        - syslog_drain
       tags:
         - github
       metadata:

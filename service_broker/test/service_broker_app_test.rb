@@ -7,12 +7,13 @@ def app
 end
 
 describe "ServiceBrokerApp" do
+  let(:ethereum_service_helper) { mock }
+  let(:bootnode) { nil }
   before do
-    ethereum_service_helper = mock
+    ethereum_service_helper.stubs(:bootnode).returns(bootnode)
+    ethereum_service_helper.stubs(:nodes).returns({})
+
     EthereumServiceHelper.stubs(:new).returns(ethereum_service_helper)
-    ethereum_service_helper.stubs(:bootnode).returns({ip: "1.2.3.4"})
-    ethereum_service_helper.stubs(:nodes).returns([{ip: "1.2.3.4"}])
-    ethereum_service_helper.stubs(:env).returns("FOO=bar")
   end
 
   describe "get /v2/catalog" do
@@ -70,6 +71,7 @@ describe "ServiceBrokerApp" do
           assert service.keys.include? "description"
           assert service.keys.include? "bindable"
           assert service.keys.include? "plans"
+          assert_equal ["syslog_drain"], service["requires"]
 
           plans = service["plans"]
           assert plans.length > 0
@@ -138,7 +140,6 @@ describe "ServiceBrokerApp" do
     describe "when basic auth credentials are correct" do
       before do
         authorize "admin", "password"
-
       end
 
       describe "when repo is successfully created" do
@@ -199,31 +200,47 @@ describe "ServiceBrokerApp" do
     describe "when basic auth credentials are correct" do
       before do
         authorize "admin", "password"
-
-      end
-
-      it "specifies the content type of the response" do
-        make_request
-        last_response.header["Content-Type"].must_include("application/json")
       end
 
       describe "when binding succeeds" do
-        before do
-          make_request
+        describe "when ethereum service has no data" do
+          it "returns a 201 Created" do
+            make_request
+            assert_equal 201, last_response.status
+          end
+
+          it "responds with credentials, including the private key and repo url" do
+            make_request
+            last_response.body.must_equal({
+                                              syslog_drain_url: "http://example.org/log-collector"
+                                          }.to_json)
+          end
         end
 
-        it "returns a 201 Created" do
-          assert_equal 201, last_response.status
-        end
+        describe "when ethereum service has data" do
+          let(:bootnode) {"a@1.2.3.4:567"}
 
-        it "responds with credentials, including the private key and repo url" do
-          last_response.body.must_equal({
-                                          credentials: {
-                                            bootnode: {ip: "1.2.3.4"},
-                                            nodes: [{ip: "1.2.3.4"}],
-                                            env: "FOO=bar"
-                                          }
-                                        }.to_json)
+          it "specifies the content type of the response" do
+            make_request
+            last_response.header["Content-Type"].must_include("application/json")
+          end
+
+          it "returns a 201 Created" do
+            make_request
+            assert_equal 201, last_response.status
+          end
+
+          it "responds with credentials, including the private key and repo url" do
+            make_request
+            last_response.body.must_equal({
+                                              credentials: {
+                                                  bootnode: "a@1.2.3.4:567",
+                                                  nodes: [{ip: "1.2.3.4"}],
+                                                  env: "FOO=bar"
+                                              },
+                                              syslog_drain_url: "http://example.org/log-collector"
+                                          }.to_json)
+          end
         end
       end
     end

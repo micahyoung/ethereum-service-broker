@@ -4,7 +4,6 @@ require 'yaml'
 require 'logger'
 
 require_relative './ethereum_service_helper'
-
 class ServiceBrokerApp < Sinatra::Base
   helpers do
     def protected!
@@ -57,16 +56,19 @@ class ServiceBrokerApp < Sinatra::Base
     content_type :json
     status 201
 
+    log_collector_url="#{request.scheme}://#{request.host}/log-collector"
     if ethereum_metadata_service.bootnode
       {
         credentials: {
           bootnode: ethereum_metadata_service.bootnode,
           nodes: ethereum_metadata_service.nodes,
-          env: ethereum_metadata_service.env,
-        }
+        },
+        syslog_drain_url: log_collector_url
       }.to_json
     else
-      {}.to_json
+      {
+        syslog_drain_url: log_collector_url
+      }.to_json
     end
 
     # create app user account
@@ -108,8 +110,8 @@ class ServiceBrokerApp < Sinatra::Base
 
     status 200
     {
-      env: ethereum_metadata_service.env
-    }.merge(ethereum_metadata_service.bootnode).to_json
+      bootnode: ethereum_metadata_service.bootnode
+    }.to_json
   end
 
   get '/log-collector/nodes' do

@@ -13,14 +13,8 @@ describe "POST /log-collector" do
     get "/log-collector/bootnodes"
 
     assert_equal 200, last_response.status
-    last_response.body.must_equal({env: <<-EOS, ip: "10.252.26.21", bootnode_port: "33445", bootnode_pubkey: "61077a284f5ba7607ab04f33cfde2750d659ad9af962516e159cf6ce708646066cd927a900944ce393b98b95c914e4d6c54b099f568342647a1cd4a262cc0423"}.to_json)
-export NETWORK_ID=12345
-export BOOTNODE_IP=10.252.26.21
-export BOOTNODE_PORT=33445
-export BOOTNODE_PUBKEY=61077a284f5ba7607ab04f33cfde2750d659ad9af962516e159cf6ce708646066cd927a900944ce393b98b95c914e4d6c54b099f568342647a1cd4a262cc0423
-    EOS
+    last_response.body.must_equal({bootnode:"61077a284f5ba7607ab04f33cfde2750d659ad9af962516e159cf6ce708646066cd927a900944ce393b98b95c914e4d6c54b099f568342647a1cd4a262cc0423@10.252.26.21:33445"}.to_json)
   end
-
 end
 
 describe "GET /log-collector" do
