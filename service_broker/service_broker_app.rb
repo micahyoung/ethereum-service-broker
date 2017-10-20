@@ -89,6 +89,7 @@ class ServiceBrokerApp < Sinatra::Base
   delete '/v2/service_instances/:instance_id' do |_instance_id|
     protected!
 
+    #TODO ethereum_metadata_service.reset
     content_type :json
     status 200
     {}.to_json
