@@ -2,7 +2,7 @@ catalog:
   services: # catalog must advertise at least one service
     - id: 525c5b5c-4e1d-4dbb-bea0-443d44a43b93
       name: ethereum-discovery-service
-      description: Provides to an Ethereum cluster
+      description: Provides bootnode discovery to an Ethereum cluster
       bindable: true
       requires: [syslog_drain]
       tags:
