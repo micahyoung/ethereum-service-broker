@@ -24,5 +24,5 @@ pushd service_broker
   ROUTE=$(cf app $BROKER_APP_NAME | grep routes: | awk '{print $2}')
   USERNAME=$(grep 'username:' config/settings.yml | awk '{print $2}')
   PASSWORD=$(grep 'password:' config/settings.yml | awk '{print $2}')
-  cf create-service-broker $SERVICE_NAME $USERNAME $PASSWORD https://$ROUTE/ --space-scoped
+  cf create-service-broker $SERVICE_NAME $USERNAME $PASSWORD https://$ROUTE --space-scoped
 popd
